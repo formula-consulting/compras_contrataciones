@@ -29,46 +29,6 @@ compras_adjudicadas <- compras %>%
          modalidad, unidad_compra, enlace_del_proceso)
 
 
-# Obras públicas ----------------------------------------------------------
-
-obras_publicas <- compras_adjudicadas %>% 
-  filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
-
-obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
-
-for (proceso in 1:length(obras_publicas_detalle)) {
-  obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
-  
-  print(paste0("Iteración ", proceso,'; ', 
-               round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
-}
-
-obras_publicas_detalle <- obras_publicas_detalle %>% 
-  bind_rows()
-
-saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
-
-
-# MEPyD -------------------------------------------------------------------
-
-mepyd <- compras_adjudicadas %>% 
- filter(unidad_compra == "Ministerio de Economía, Planificación y Desarrollo")
-
-mepyd_detalle <- vector(length = nrow(mepyd), mode = "list")
-
-for (proceso in 67:length(mepyd_detalle)) {
-  mepyd_detalle[[proceso]] <- get_compra_data(mepyd$enlace_del_proceso[proceso])
-  
-  print(paste0("Iteración ", proceso,'; ', 
-               round(proceso/length(mepyd_detalle), 2) * 100, "%"))
-}
-
-mepyd_detalle <- mepyd_detalle %>% 
-  bind_rows()
-
-saveRDS(mepyd_detalle, here::here("data", "rds", "mepyd_complemento.RDS"))
-
-
 # Webscraping compras y contrataciones ------------------------------------
 
 # Función para extraer la data
@@ -126,68 +86,41 @@ get_compra_data <- function(url) {
 }
 
 
+# Obras públicas ----------------------------------------------------------
+
+obras_publicas <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
+
+obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
+
+for (proceso in 1:length(obras_publicas_detalle)) {
+  obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
+}
+
+obras_publicas_detalle <- obras_publicas_detalle %>% 
+  bind_rows()
+
+saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
 
 
+# MEPyD -------------------------------------------------------------------
 
+mepyd <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Ministerio de Economía, Planificación y Desarrollo")
 
-# library(rvest)
-# url <- "https://comunidad.comprasdominicana.gob.do//Public/Tendering/OpportunityDetail/Index?noticeUID=DO1.NTC.700904"
-# 
-# #read the page
-# page <- read_html(url) 
-# 
-# #collect the business cards
-# businesscards <- page %>% html_nodes("table.VortalGrid[id=grdBiddersList_tbl]") %>% 
-#   html_table(fill=TRUE)
-# 
-# supplier <- businesscards[[1]]$Supplier
-# 
-# #Extract the URL from the lines
-# supplier <- gsub(".+\\(\'(.*)\', .+", "\\1", supplier)
-# #remove blank URL
-# supplier <- supplier[nchar(supplier) >10 & !is.na(supplier)]
-# 
-# # attempt to read the suppliers
-# bc1 <-read_html(supplier[2])
-# bc1 %>% html_node("table") %>% html_table()
-#most additional information is stored as attributes
+mepyd_detalle <- vector(length = nrow(mepyd), mode = "list")
 
+for (proceso in 1:length(mepyd_detalle)) {
+  mepyd_detalle[[proceso]] <- get_compra_data(mepyd$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(mepyd_detalle), 2) * 100, "%"))
+}
 
-# # Proveedor
-# read_html(enlace1) %>% 
-#   html_nodes('.FltLightBackground~ .FltLightBackground .VortalSpan') %>% 
-#   html_text() %>% 
-#   paste(collapse = '; ')
-# 
-# # detalles articulos comprados
-# read_html(enlace1) %>%
-#   html_nodes(".PriceListLine") %>% 
-#   #html_nodes("td") %>%
-#   html_nodes('.PriceListLineTable') %>%
-#   html_table(fill = TRUE) %>%
-#   map(
-#     ~slice(.x, 1) %>% 
-#       set_names(c('referencia', 'codigo_unspsc', 'cuenta_presupuestaria',
-#                   'descripcion', 'descripcion2', 'cantidad', 'unidad', 'precio_unitario_estimado',
-#                   'importe_estimado'))
-#     ) %>% 
-#   bind_rows() 
-# 
-# # monto_contratado
-# read_html(enlace1) %>%
-#   html_nodes('.FltContentTdAwardDetail .VortalNumericSpan') %>% 
-#   html_text() %>% 
-#   `[`(1) %>% parse_number()
-# 
-# # monto estimado
-# read_html(enlace1) %>%
-#   html_nodes("#cbxBasePriceValue") %>% 
-#   html_text() %>% 
-#   parse_number()
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+mepyd_detalle <- mepyd_detalle %>% 
+  bind_rows()
+
+saveRDS(mepyd_detalle, here::here("data", "rds", "mepyd_complemento.RDS"))
