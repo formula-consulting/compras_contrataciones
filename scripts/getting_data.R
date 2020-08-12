@@ -54,6 +54,7 @@ get_compra_data <- function(url) {
     `[`(1) %>% parse_number()
   
   # detalles articulos comprados
+  
   detalle_compra <- html %>%
     html_nodes(".PriceListLine") %>% 
     #html_nodes("td") %>%
@@ -61,21 +62,39 @@ get_compra_data <- function(url) {
     html_table(fill = TRUE) %>%
     map(
       ~slice(.x, 1) %>% 
-        set_names(c('referencia', 'codigo_unspsc', "codigo_unspsc2", 'cuenta_presupuestaria',
-                    'descripcion', #'descripcion2', 
-                    'cantidad', 'unidad', 'precio_unitario_estimado',
-                    'importe_estimado')) %>% 
-        mutate(across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), as.character),
-               across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), parse_number))
+        mutate(across(everything(), as.character()))
     ) %>% 
     bind_rows()
+  
+  if(ncol(detalle_compra) == 9) {
+    detalle_compra <- setNames(detalle_compra,
+                               c('referencia', 'codigo_unspsc', "codigo_unspsc2", 'cuenta_presupuestaria',
+                                 'descripcion', 'cantidad', 'unidad', 'precio_unitario_estimado',
+                                 'importe_estimado'))  %>% 
+      mutate(across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), as.character),
+             across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), parse_number))
+  } else {
+    detalle_compra <- detalle_compra %>% 
+      setNames(
+        c('referencia', 'codigo_unspsc', "codigo_unspsc2", 'cuenta_presupuestaria',
+          'descripcion','cantidad_requerida', 'cantidad', 'unidad', 'precio_unitario_estimado',
+          'precio_unitario', 'importe_moneda_original', 'itbis_descuento', 'descuento_mo', 'monto_gravado', 'itbis_pct',
+          'itbis_mo', 'otros_impuestos_pct', 'otros_impuestos_mo', 'importe_estimado')
+      )  %>% 
+      mutate(across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), as.character),
+             across(c(referencia, cantidad, precio_unitario_estimado, importe_estimado), parse_number)) %>% 
+      select(referencia, codigo_unspsc, codigo_unspsc2, cuenta_presupuestaria, descripcion,
+             cantidad, unidad, precio_unitario_estimado, importe_estimado)
+    
+  }
+  
   
   data <- tibble(
     proveedor,
     monto_estimado,
     monto_contratado,
     enlace_del_proceso = url
-    )
+  )
   
   data <- bind_cols(data, detalle_compra) %>%
     mutate(cantidad_proveedores = str_count(proveedor, ';') + 1) %>% #nueva variable
@@ -85,25 +104,24 @@ get_compra_data <- function(url) {
   return(data)
 }
 
-
 # Obras públicas ----------------------------------------------------------
 
-obras_publicas <- compras_adjudicadas %>% 
-  filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
-
-obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
-
-for (proceso in 1:length(obras_publicas_detalle)) {
-  obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
-  
-  print(paste0("Iteración ", proceso,'; ', 
-               round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
-}
-
-obras_publicas_detalle <- obras_publicas_detalle %>% 
-  bind_rows()
-
-saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
+# obras_publicas <- compras_adjudicadas %>% 
+#   filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
+# 
+# obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
+# 
+# for (proceso in 1:length(obras_publicas_detalle)) {
+#   obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
+#   
+#   print(paste0("Iteración ", proceso,'; ', 
+#                round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
+# }
+# 
+# obras_publicas_detalle <- obras_publicas_detalle %>% 
+#   bind_rows()
+# 
+# saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
 
 
 # MEPyD -------------------------------------------------------------------
@@ -124,3 +142,24 @@ mepyd_detalle <- mepyd_detalle %>%
   bind_rows()
 
 saveRDS(mepyd_detalle, here::here("data", "rds", "mepyd_complemento.RDS"))
+
+
+# Senasa ------------------------------------------------------------------
+
+senasa <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Seguro Nacional de Salud (SENASA)")
+
+senasa_detalle <- vector(length = nrow(senasa), mode = "list")
+
+for (proceso in 146:length(senasa_detalle)) {
+  senasa_detalle[[proceso]] <- get_compra_data(senasa$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(senasa_detalle), 2) * 100, "%"))
+}
+
+senasa_detalle <- senasa_detalle %>% 
+  bind_rows()
+
+saveRDS(senasa_detalle, here::here("data", "rds", "senasa_complemento.RDS"))
+
