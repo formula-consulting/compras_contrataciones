@@ -4,6 +4,7 @@ obras_publicas_detalle <- obras_publicas_detalle %>%
   ungroup() %>% 
   left_join(obras_publicas, ., by = 'enlace_del_proceso') %>% 
   unnest(data) %>% 
+
   select(-codigo_unspsc2) %>%
 mutate(
   codigo = str_extract(codigo_unspsc, "^[0-9]+"),

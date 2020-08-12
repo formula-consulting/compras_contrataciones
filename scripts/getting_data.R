@@ -110,7 +110,7 @@ get_compra_data <- function(url) {
 #   filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
 # 
 # obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
-# 
+
 # for (proceso in 1:length(obras_publicas_detalle)) {
 #   obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
 #   
@@ -142,7 +142,6 @@ mepyd_detalle <- mepyd_detalle %>%
   bind_rows()
 
 saveRDS(mepyd_detalle, here::here("data", "rds", "mepyd_complemento.RDS"))
-
 
 # Senasa ------------------------------------------------------------------
 
