@@ -163,3 +163,110 @@ senasa_detalle <- senasa_detalle %>%
 
 saveRDS(senasa_detalle, here::here("data", "rds", "senasa_complemento.RDS"))
 
+
+# ministerio_agricultura --------------------------------------------------
+
+ministerio_agricultura <- compras_adjudicadas %>% 
+  filter(unidad_compra == "MINISTERIO DE AGRICULTURA")
+
+ministerio_agricultura_detalle <- vector(length = nrow(ministerio_agricultura), mode = "list")
+
+for (proceso in 1:length(ministerio_agricultura_detalle)) {
+  ministerio_agricultura_detalle[[proceso]] <- get_compra_data(ministerio_agricultura$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(ministerio_agricultura_detalle), 2) * 100, "%"))
+}
+
+ministerio_agricultura_detalle <- ministerio_agricultura_detalle %>% 
+  bind_rows()
+
+saveRDS(ministerio_agricultura_detalle, here::here("data", "rds", "ministerio_agricultura_complemento.RDS"))
+
+
+# interior_policia --------------------------------------------------------
+
+interior_policia <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Ministerio de Interior y Policía")
+
+interior_policia_detalle <- vector(length = nrow(interior_policia), mode = "list")
+
+for (proceso in 1:length(interior_policia_detalle)) {
+  interior_policia_detalle[[proceso]] <- get_compra_data(interior_policia$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(interior_policia_detalle), 2) * 100, "%"))
+}
+
+interior_policia_detalle <- interior_policia_detalle %>% 
+  bind_rows()
+
+saveRDS(interior_policia_detalle, here::here("data", "rds", "interior_policia_complemento.RDS"))
+
+
+# defensa -----------------------------------------------------------------
+
+
+defensa <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Ministerio de Defensa")
+
+defensa_detalle <- vector(length = nrow(defensa), mode = "list")
+
+for (proceso in 1:length(defensa_detalle)) {
+  defensa_detalle[[proceso]] <- get_compra_data(defensa$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(defensa_detalle), 2) * 100, "%"))
+}
+
+defensa_detalle <- defensa_detalle %>% 
+  bind_rows()
+
+saveRDS(defensa_detalle, here::here("data", "rds", "defensa_complemento.RDS"))
+
+
+# micm --------------------------------------------------------------------
+
+micm <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Ministerio de Industria, Comercio y Mipymes")
+
+micm_detalle <- vector(length = nrow(micm), mode = "list")
+
+for (proceso in 1:length(micm_detalle)) {
+  micm_detalle[[proceso]] <- get_compra_data(micm$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(micm_detalle), 2) * 100, "%"))
+}
+
+micm_detalle <- micm_detalle %>% 
+  bind_rows()
+
+saveRDS(micm_detalle, here::here("data", "rds", "micm_complemento.RDS"))
+
+
+# dgii --------------------------------------------------------------------
+
+
+dgii <- compras_adjudicadas %>% 
+  filter(unidad_compra == "Dirección General Impuestos Internos")
+
+dgii_detalle <- vector(length = nrow(dgii), mode = "list")
+
+for (proceso in 1:length(dgii_detalle)) {
+  dgii_detalle[[proceso]] <- get_compra_data(dgii$enlace_del_proceso[proceso])
+  
+  print(paste0("Iteración ", proceso,'; ', 
+               round(proceso/length(dgii_detalle), 2) * 100, "%"))
+}
+
+dgii_detalle <- dgii_detalle %>% 
+  bind_rows()
+
+saveRDS(dgii_detalle, here::here("data", "rds", "dgii_complemento.RDS"))
+
+
+
+
+
+
