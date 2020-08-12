@@ -88,22 +88,22 @@ get_compra_data <- function(url) {
 
 # Obras públicas ----------------------------------------------------------
 
-obras_publicas <- compras_adjudicadas %>% 
+obras_publicas <- compras_adjudicadas %>%
   filter(unidad_compra == "Ministerio de Obras Públicas y Comunicaciones")
 
-obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
+# obras_publicas_detalle <- vector(length = nrow(obras_publicas), mode = "list")
 
-for (proceso in 1:length(obras_publicas_detalle)) {
-  obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
-  
-  print(paste0("Iteración ", proceso,'; ', 
-               round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
-}
-
-obras_publicas_detalle <- obras_publicas_detalle %>% 
-  bind_rows()
-
-saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
+# for (proceso in 1:length(obras_publicas_detalle)) {
+#   obras_publicas_detalle[[proceso]] <- get_compra_data(obras_publicas$enlace_del_proceso[proceso])
+#   
+#   print(paste0("Iteración ", proceso,'; ', 
+#                round(proceso/length(obras_publicas_complemento), 2) * 100, "%"))
+# }
+# 
+# obras_publicas_detalle <- obras_publicas_detalle %>% 
+#   bind_rows()
+# 
+# saveRDS(obras_publicas_detalle, here::here("data", "rds", "obras_publicas_complemento.RDS"))
 
 
 # MEPyD -------------------------------------------------------------------
@@ -124,3 +124,5 @@ mepyd_detalle <- mepyd_detalle %>%
   bind_rows()
 
 saveRDS(mepyd_detalle, here::here("data", "rds", "mepyd_complemento.RDS"))
+
+
