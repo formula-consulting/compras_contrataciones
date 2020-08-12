@@ -6,8 +6,12 @@ obras_publicas_detalle <- obras_publicas_detalle %>%
   unnest(data) %>% 
   select(-codigo_unspsc2) %>% 
   mutate(
-    codigo = str_match(codigo_unspsc, "^([0-9]+) - .+ - (.+)$") %>% `[`(,2),
-    categoria_gasto = str_match(codigo_unspsc, "^([0-9]+) - .+ - (.+)$") %>% `[`(,3)
+    codigo = str_extract(codigo_unspsc, "^[0-9]+"),
+    categoria_gasto = ifelse(
+      str_count(codigo_unspsc, "-") > 1,
+      str_match(codigo_unspsc, "^([0-9]+) - .+ - (.+)$") %>% `[`(,3),
+      str_remove(codigo_unspsc, "^([0-9]+) - ")
+    )
   ) %>% 
   select(
     id_proceso, codigo_proceso, fecha_creacion, caratula, objeto_del_proceso,
