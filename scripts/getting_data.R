@@ -28,6 +28,7 @@ compras_adjudicadas <- compras %>%
   select(id_proceso, codigo_proceso, fecha_creacion, caratula, objeto_del_proceso,
          modalidad, unidad_compra, enlace_del_proceso)
 
+#saveRDS(compras_adjudicadas, 'data/compras_adjudicadas.RDS')
 
 # Webscraping compras y contrataciones ------------------------------------
 
